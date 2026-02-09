@@ -48,18 +48,155 @@
 
 <h3>Projeção de Preço ({{ dias }} dias)</h3>
 
-
 {% if faixa %}
 <p>
-Faixa estimada: <strong>R$ {{ faixa.min }}</strong> até
+Faixa estimada (principal): <strong>R$ {{ faixa.min }}</strong> até
 <strong>R$ {{ faixa.max }}</strong>
 </p>
 
 <p style="font-size: 0.9em;">
-Estimativa baseada na volatilidade histórica. Não é recomendação de investimento.
+Baseada na volatilidade EWMA (mais sensível a mudanças recentes).
 </p>
 {% endif %}
 
+{% if faixa_std or faixa_ewma or faixa_rob %}
+<h4>Comparação de Volatilidade </h4>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-size: 0.95em;">
+  <tr style="background-color: #f0f0f0;">
+    <th>Método</th>
+    <th>Volatilidade (%)</th>
+    <th>Faixa mínima</th>
+    <th>Faixa máxima</th>
+  </tr>
+
+  {% if indicadores.vol_std and faixa_std %}
+  <tr>
+    <td>Desvio padrão (log)</td>
+    <td>{{ indicadores.vol_std }}%</td>
+    <td>R$ {{ faixa_std.min }}</td>
+    <td>R$ {{ faixa_std.max }}</td>
+  </tr>
+  {% endif %}
+
+  {% if indicadores.vol_ewma and faixa_ewma %}
+  <tr>
+    <td>EWMA (RiskMetrics)</td>
+    <td>{{ indicadores.vol_ewma }}%</td>
+    <td>R$ {{ faixa_ewma.min }}</td>
+    <td>R$ {{ faixa_ewma.max }}</td>
+  </tr>
+  {% endif %}
+
+  {% if indicadores.vol_robusta and faixa_rob %}
+  <tr>
+    <td>Robusta (MAD / winsor)</td>
+    <td>{{ indicadores.vol_robusta }}%</td>
+    <td>R$ {{ faixa_rob.min }}</td>
+    <td>R$ {{ faixa_rob.max }}</td>
+  </tr>
+  {% endif %}
+</table>
+
+<p style="font-size: 0.85em; margin-top: 6px;">
+A EWMA reage mais rápido a mudanças recentes.  
+A volatilidade robusta reduz o impacto de eventos extremos.
+</p>
+{% endif %}
+
+
+{% if bt_std or bt_ewma or bt_rob or bt_calibrado %}
+<h3>Backtesting e Calibração </h3>
+
+<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; font-size: 0.95em;">
+  <tr style="background:#f0f0f0;">
+    <th>Método</th>
+    <th>k</th>
+    <th>Coverage (%)</th>
+    <th>Largura média</th>
+    <th>Sharpness</th>
+    <th>Testes</th>
+    <th>Faixa hoje ({{ dias }}d)</th>
+  </tr>
+
+  {% if bt_std %}
+  <tr>
+    <td>STD</td>
+    <td>1.00</td>
+    <td>{{ bt_std.coverage }}</td>
+    <td>R$ {{ bt_std.largura_media }}</td>
+    <td>{{ bt_std.sharpness }}</td>
+    <td>{{ bt_std.total_testes }}</td>
+    <td>
+      {% if faixa_std %}
+        R$ {{ faixa_std.min }} — R$ {{ faixa_std.max }}
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
+
+  {% if bt_ewma %}
+  <tr>
+    <td>EWMA</td>
+    <td>1.00</td>
+    <td>{{ bt_ewma.coverage }}</td>
+    <td>R$ {{ bt_ewma.largura_media }}</td>
+    <td>{{ bt_ewma.sharpness }}</td>
+    <td>{{ bt_ewma.total_testes }}</td>
+    <td>
+      {% if faixa_ewma %}
+        R$ {{ faixa_ewma.min }} — R$ {{ faixa_ewma.max }}
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
+
+  {% if bt_rob %}
+  <tr>
+    <td>Robusta</td>
+    <td>1.00</td>
+    <td>{{ bt_rob.coverage }}</td>
+    <td>R$ {{ bt_rob.largura_media }}</td>
+    <td>{{ bt_rob.sharpness }}</td>
+    <td>{{ bt_rob.total_testes }}</td>
+    <td>
+      {% if faixa_rob %}
+        R$ {{ faixa_rob.min }} — R$ {{ faixa_rob.max }}
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
+
+  {% if bt_calibrado %}
+  <tr style="background:#e8fff0;">
+    <td><strong>EWMA (Calibrado)</strong></td>
+    <td><strong>{{ k_otimo }}</strong></td>
+    <td><strong>{{ bt_calibrado.coverage }}</strong></td>
+    <td><strong>R$ {{ bt_calibrado.largura_media }}</strong></td>
+    <td><strong>{{ bt_calibrado.sharpness }}</strong></td>
+    <td><strong>{{ bt_calibrado.total_testes }}</strong></td>
+    <td>
+      {% if faixa_calibrada %}
+        <strong>R$ {{ faixa_calibrada.min }} — R$ {{ faixa_calibrada.max }}</strong>
+      {% else %}
+        —
+      {% endif %}
+    </td>
+  </tr>
+  {% endif %}
+</table>
+
+<p style="font-size:0.85em; margin-top: 6px;">
+Coverage = % de vezes que o preço futuro ficou dentro da faixa.  
+Sharpness menor = faixa mais eficiente (mais estreita para um mesmo coverage).
+</p>
+{% endif %}
 
 
 <hr>
