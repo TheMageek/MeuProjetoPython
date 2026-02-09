@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Assistente de Investimentos</title>
+</head>
+<body>
+
+<h1>Assistente de Investimentos</h1>
+
+<form action="/analyze" method="post">
+  <input name="ticker" placeholder="Ex: PETR4" required>
+
+  <br><br>
+
+  <label>Dias de projeção:</label>
+  <input type="number" name="dias" value="10" min="1" max="60">
+
+  <br><br>
+
+  <button type="submit">Analisar</button>
+</form>
+
+</body>
+</html>

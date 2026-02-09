@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Análise de Ação</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Análise de Ação</h1>
+
+<p><strong>Empresa:</strong> {{ ticker }}</p>
+
+{% if price %}
+  <p><strong>Preço atual:</strong> {{ "%.2f"|format(price) }}</p>
+{% else %}
+  <p>Não foi possível obter o preço.</p>
+{% endif %}
+
+<h3>Análise Técnica</h3>
+
+<ul>
+  <li>
+    <strong>Tendência:</strong> {{ indicadores.tendencia }}  
+    — mostra se o preço está em alta, queda ou lateralizado.
+  </li>
+
+  <li>
+    <strong>RSI:</strong> {{ indicadores.rsi }}  
+    — indica se a ação está sobrecomprada (>70) ou sobrevendida (<30).
+  </li>
+
+  <li>
+    <strong>Volatilidade:</strong> {{ indicadores.volatilidade }}%  
+    — mede o quanto o preço varia no curto prazo.
+  </li>
+
+  <li>
+    <strong>Drawdown:</strong> {{ indicadores.drawdown }}%  
+    — maior queda desde o último topo.
+  </li>
+
+  <li>
+    <strong>Risco:</strong> {{ indicadores.risco }}  
+    — classificação geral baseada na volatilidade e drawdown.
+  </li>
+</ul>
+
+<h3>Projeção de Preço ({{ dias }} dias)</h3>
+
+
+{% if faixa %}
+<p>
+Faixa estimada: <strong>R$ {{ faixa.min }}</strong> até
+<strong>R$ {{ faixa.max }}</strong>
+</p>
+
+<p style="font-size: 0.9em;">
+Estimativa baseada na volatilidade histórica. Não é recomendação de investimento.
+</p>
+{% endif %}
+
+
+
+<hr>
+
+<h2>Histórico (últimos dias)</h2>
+
+<canvas id="priceChart" height="90"></canvas>
+
+<script>
+  const historyData = {{ (history or []) | tojson }};
+  console.log("historyData length =", historyData.length);
+
+  if (!historyData.length) {
+    document.body.insertAdjacentHTML("beforeend", "<p>Não foi possível obter histórico para este ticker.</p>");
+  } else {
+    const labels = historyData.map(p => p.date);
+    const values = historyData.map(p => p.close);
+
+    const ctx = document.getElementById("priceChart");
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [{
+          label: "Preço de fechamento",
+          data: values,
+          tension: 0.2,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true }
+        }
+      }
+    });
+  }
+</script>
+
+<br>
+<a href="/">Voltar</a>
+
+</body>
+</html>

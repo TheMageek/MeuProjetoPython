@@ -1,0 +1,13 @@
+# ambiente
+.venv/
+__pycache__/
+*.pyc
+
+# segredos
+.env
+
+# vscode
+.vscode/
+
+# notebook
+.ipynb_checkpoints/
