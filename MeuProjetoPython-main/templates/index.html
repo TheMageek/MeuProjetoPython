@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="badge">💡 Plataforma educacional para investidores iniciantes</div>
+
+    <h1 style="font-size: clamp(34px, 5vw, 58px); margin-top:16px;">
+      Aprenda a analisar ações de forma <span class="text-gradient">simples e didática</span>
+    </h1>
+
+    <p class="lead">
+      Entenda o mercado financeiro brasileiro com explicações claras,
+      visualização de indicadores e projeções em um painel fácil de ler.
+    </p>
+
+    <div class="actions" id="analisar">
+      <a class="btn btn-outline" href="#form">Ver análise</a>
+      <a class="btn btn-primary" href="#form">Começar agora</a>
+    </div>
+
+    <div class="card" style="margin-top:24px; text-align:left;">
+      <h3 style="margin-bottom:6px;">🔎 Analisar uma ação</h3>
+      <p style="margin-bottom:14px;">Digite o ticker (ex: PETR4, VALE3, ITUB4) e escolha o horizonte.</p>
+
+      <form class="form" id="form" method="POST" action="/analyze">
+        <input class="input" name="ticker" placeholder="Ticker (ex: PETR4)" required>
+        <input class="input" name="dias" placeholder="Dias (ex: 10)" value="10" inputmode="numeric">
+        <button class="btn btn-primary" type="submit">Analisar</button>
+      </form>
+
+      <small>Dica: se usar Yahoo/BRAPI no backend, alguns tickers pedem sufixo .SA.</small>
+    </div>
+  </div>
+</section>
+
+<!-- INDICADORES DO MERCADO -->
+<section class="section">
+  <div class="container">
+    <h2 style="margin: 0 0 6px 0;">📊 Indicadores do Mercado</h2>
+    <p class="lead" style="margin: 0 0 14px 0; max-width:none;">
+      Dados públicos (BCB/SGS e brapi). Se alguma fonte falhar, mostramos “—”.
+    </p>
+
+    <div class="grid grid-6">
+      {% for title, item in (macro or {}).items() %}
+        <div class="card macro-card">
+          <div class="macro-top">
+            <div class="macro-title">{{ title }}</div>
+
+            {% set ch = item.get('change_pct') %}
+            {% if ch is not none %}
+              <span class="macro-chip {% if ch|float < 0 %}neg{% else %}pos{% endif %}">
+                {{ "%.2f"|format(ch|float) }}%
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="macro-value">
+            {% set v = item.get('value') %}
+            {% if v is none %}
+              —
+            {% else %}
+              {% if title in ["Taxa Selic", "Inflação (IPCA)", "Desemprego", "PIB Brasil"] %}
+                {{ "%.2f"|format(v|float) }}<span class="macro-unit">%</span>
+              {% elif title == "Dólar (USD/BRL)" %}
+                {{ "%.2f"|format(v|float) }}<span class="macro-unit">R$</span>
+              {% elif title == "Ibovespa" %}
+                {{ "{:,.0f}".format(v|float).replace(",", ".") }}<span class="macro-unit">pts</span>
+              {% else %}
+                {{ v }}
+              {% endif %}
+            {% endif %}
+          </div>
+
+          <small class="macro-foot">
+            Fonte: {{ item.get('source') or "—" }}{% if item.get('date') %} • {{ item.get('date') }}{% endif %}
+          </small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- O QUE VOCÊ VAI APRENDER -->
+<section class="section section-muted">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:14px;">
+      <h2 style="font-size: 26px;">📊 O que você verá no painel</h2>
+      <p class="lead" style="max-width:760px;">Organização em cards, com leitura rápida e visual limpo.</p>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>📈 Indicadores</h3>
+        <p>RSI, volatilidade, drawdown e leitura de risco com linguagem simples.</p>
+      </div>
+      <div class="card">
+        <h3>🎯 Faixa projetada</h3>
+        <p>Projeção de intervalo de preço por dia para o horizonte escolhido.</p>
+      </div>
+      <div class="card">
+        <h3>🧪 Backtests</h3>
+        <p>Comparativos de métodos (se o seu backend já gera esses resultados).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="section">
+  <div class="container">
+    <div class="card" style="text-align:center; padding: 26px;">
+      <h2 style="font-size: 28px;">Pronto para começar?</h2>
+      <p class="lead" style="margin-bottom:16px;">Escolha um ticker e veja a análise num painel bonito e responsivo.</p>
+      <a class="btn btn-primary" href="#form">Analisar uma ação</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

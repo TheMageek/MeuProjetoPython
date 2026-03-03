@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="section">
+  <div class="container">
+    <div class="badge">📌 Resultado da análise</div>
+    <h1 style="font-size: 34px; margin-top:14px;">
+      {{ ticker or "Ação" }} • <span class="text-gradient">Painel</span>
+    </h1>
+    <p class="lead" style="margin: 6px 0 0 0;">
+      Visualização limpa e didática dos principais números.
+    </p>
+
+    {% if error %}
+      <div class="card" style="margin-top:16px; border-color: color-mix(in srgb, var(--danger) 35%, var(--border));">
+        <h3 style="margin-bottom:6px;">⚠️ Não foi possível completar</h3>
+        <p>{{ error }}</p>
+      </div>
+    {% endif %}
+
+    <!-- ===== GRID PRINCIPAL ===== -->
+    <div class="dashboard-grid" style="margin-top:18px;">
+
+      <!-- PREÇO + GRÁFICO (2 colunas) -->
+      <div class="card span-2">
+        <h3>💰 Preço atual</h3>
+
+        <div class="kpi" style="margin-top:10px; align-items:center;">
+          <div class="value">{{ price if price is not none else "—" }}</div>
+          <div class="delta" style="color:var(--muted-foreground)">BRL</div>
+        </div>
+
+        <!-- Controles de período -->
+        <div class="range-toolbar" style="margin-top:12px;">
+          <button class="seg" type="button" data-range="1D">1 dia</button>
+          <button class="seg" type="button" data-range="1W">1 semana</button>
+          <button class="seg" type="button" data-range="1M">1 mês</button>
+          <button class="seg" type="button" data-range="6M">6 meses</button>
+          <button class="seg active" type="button" data-range="1Y">1 ano</button>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="chart-wrap" style="margin-top:10px; height: 190px;">
+          <canvas id="priceChart"></canvas>
+        </div>
+
+        <small id="chartHint">Passe o mouse para ver valores • Clique nos botões para trocar o período</small>
+      </div>
+
+      <!-- VOLATILIDADE -->
+      <div class="card">
+        <h3>📉 Volatilidade</h3>
+        <div class="kpi" style="margin-top:10px;">
+          <div class="value">
+            {{ indicadores.volatilidade if indicadores and indicadores.volatilidade is not none else "—" }}
+          </div>
+        </div>
+        <small>Maior volatilidade = maior oscilação.</small>
+      </div>
+
+      <!-- RSI -->
+      <div class="card">
+        <h3>🧠 RSI</h3>
+        <div class="kpi" style="margin-top:10px;">
+          <div class="value
+            {% if indicadores and indicadores.rsi is not none and indicadores.rsi >= 70 %}neg
+            {% elif indicadores and indicadores.rsi is not none and indicadores.rsi <= 30 %}pos
+            {% endif %}
+          ">
+            {{ "%.2f"|format(indicadores.rsi) if indicadores and indicadores.rsi is not none else "—" }}
+          </div>
+        </div>
+        <small>
+          Mede o “ritmo” recente do preço. Acima de 70 pode estar esticado; abaixo de 30 pode estar muito pressionado.
+        </small>
+      </div>
+
+      <!-- TENDÊNCIA E RISCO -->
+      <div class="card">
+        <h3>🧭 Tendência e risco</h3>
+        <p><b>Tendência:</b> {{ indicadores.tendencia if indicadores else "—" }}</p>
+        <p><b>Risco:</b> {{ indicadores.risco if indicadores else "—" }}</p>
+        {% if indicadores and indicadores.drawdown is not none %}
+          <p><b>Drawdown:</b> {{ indicadores.drawdown }}</p>
+          <small>Queda máxima em relação ao último topo no período analisado.</small>
+        {% endif %}
+      </div>
+
+      <!-- NOVA ANÁLISE -->
+      <div class="card">
+        <h3>🔁 Nova análise</h3>
+        <form class="form" method="POST" action="/analyze" style="justify-content:flex-start; margin-top: 8px;">
+          <input class="input" name="ticker" value="{{ ticker or '' }}" placeholder="Ticker" required>
+          <input class="input" name="dias" value="{{ dias or 10 }}" placeholder="Dias">
+          <button class="btn btn-primary" type="submit">Reanalisar</button>
+        </form>
+        <small>Troque o ticker ou o horizonte e rode de novo.</small>
+      </div>
+
+    </div>
+    <!-- ===== FIM GRID PRINCIPAL ===== -->
+
+    <!-- ===== FAIXA PROJETADA (LARGURA TOTAL) ===== -->
+    <div class="card" style="margin-top:14px;">
+      <h3>🎯 Faixa projetada</h3>
+      <p style="margin-bottom:12px;">Intervalo sugerido para {{ dias or 10 }} dias.</p>
+
+      {% macro faixa_card(titulo, f) %}
+        <div class="range-card">
+          <div class="range-top">
+            <div class="range-title">{{ titulo }}</div>
+            {% if f and (f.get('vol_diaria_pct') is not none) %}
+              <span class="pill">Vol: {{ "%.2f"|format(f.get('vol_diaria_pct')) }}%</span>
+            {% endif %}
+          </div>
+
+          {% if f and (f.get('min') is not none) and (f.get('max') is not none) %}
+            <div class="range-values">
+              <div class="range-min">R$ {{ "%.2f"|format(f.get('min')) }}</div>
+              <div class="range-sep">→</div>
+              <div class="range-max">R$ {{ "%.2f"|format(f.get('max')) }}</div>
+            </div>
+
+            <div class="range-meta">
+              {% if f.get('k') is not none %}<span class="pill pill-muted">k: {{ f.get('k') }}</span>{% endif %}
+              {% if f.get('dias') is not none %}<span class="pill pill-muted">dias: {{ f.get('dias') }}</span>{% endif %}
+            </div>
+          {% else %}
+            <div class="range-empty">—</div>
+          {% endif %}
+        </div>
+      {% endmacro %}
+
+      <div class="grid grid-4">
+        {{ faixa_card("Padrão", faixa) }}
+        {{ faixa_card("STD", faixa_std) }}
+        {{ faixa_card("EWMA", faixa_ewma) }}
+        {{ faixa_card("Robusta", faixa_rob) }}
+      </div>
+
+      {% if faixa_calibrada %}
+        <div style="margin-top:12px;">
+          {{ faixa_card("Calibrada (k ótimo)", faixa_calibrada) }}
+          {% if k_otimo %}<small>k ótimo: {{ k_otimo }}</small>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+    <!-- ===== FIM FAIXA ===== -->
+
+  </div>
+</section>
+
+<!-- Chart.js (interativo) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+<script>
+  const rawHistory = [
+    {% for h in history %}
+      {
+        date: "{{ h['date'] if h['date'] is string else h['date'].strftime('%Y-%m-%d') }}",
+        close: {{ h['close'] }}
+      }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  function parseDateISO(s){
+    const [y,m,d] = s.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+
+  function filterByRange(range){
+    if (!rawHistory.length) return [];
+
+    const last = parseDateISO(rawHistory[rawHistory.length - 1].date);
+    let start = new Date(last);
+
+    if (range === "1D") start.setDate(start.getDate() - 1);
+    else if (range === "1W") start.setDate(start.getDate() - 7);
+    else if (range === "1M") start.setMonth(start.getMonth() - 1);
+    else if (range === "6M") start.setMonth(start.getMonth() - 6);
+    else start.setFullYear(start.getFullYear() - 1);
+
+    return rawHistory.filter(p => parseDateISO(p.date) >= start);
+  }
+
+  const ctx = document.getElementById('priceChart');
+  const initialRange = "1Y";
+  const initialData = filterByRange(initialRange);
+
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: initialData.map(p => p.date),
+      datasets: [{
+        label: 'Preço (Close)',
+        data: initialData.map(p => p.close),
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => ` R$ ${Number(ctx.raw).toFixed(2)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { maxTicksLimit: 6 },
+          grid: { display: false }
+        },
+        y: {
+          ticks: { callback: (v) => `R$ ${Number(v).toFixed(0)}` }
+        }
+      }
+    }
+  });
+
+  const buttons = document.querySelectorAll('.range-toolbar .seg');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const range = btn.dataset.range;
+      const data = filterByRange(range);
+
+      chart.data.labels = data.map(p => p.date);
+      chart.data.datasets[0].data = data.map(p => p.close);
+      chart.update();
+    });
+  });
+</script>
+
+{% endblock %}
