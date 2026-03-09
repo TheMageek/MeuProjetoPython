@@ -1,0 +1,8 @@
+lightgbm
+scikit-learn
+joblib
+pandas
+numpy
+requests
+yfinance
+lxml
