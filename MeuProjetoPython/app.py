@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 
 import requests
 import logging
 import time
+from datetime import datetime
 
 from config import BRAPI_KEY
 
@@ -19,18 +20,41 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
+app.secret_key = "investedu-secret-2024"  # needed for session
 
 
 @app.get("/")
 def index():
     macro = {}
     try:
-        macro = get_macro_cards(brapi_token=BRAPI_KEY)  # reaproveita seu token
+        macro = get_macro_cards(brapi_token=BRAPI_KEY)
     except Exception as e:
         print("MACRO ERROR:", e)
         macro = {}
 
     return render_template("index.html", macro=macro)
+
+
+@app.get("/tutorial")
+def tutorial():
+    return render_template("tutorial.html", title="Tutorial — InvestEdu")
+
+
+@app.get("/faq")
+def faq():
+    return render_template("faq.html", title="FAQ — InvestEdu")
+
+
+@app.get("/historico")
+def historico():
+    hist = session.get("historico", [])
+    return render_template("historico.html", historico=hist, title="Histórico — InvestEdu")
+
+
+@app.get("/historico/limpar")
+def limpar_historico():
+    session.pop("historico", None)
+    return redirect(url_for("historico"))
 
 
 def get_stock_price(symbol: str):
@@ -49,6 +73,34 @@ def get_stock_price(symbol: str):
     except Exception as e:
         print("BRAPI PRICE ERROR:", e)
         return None
+
+
+def _save_to_history(ticker, dias, price, indicadores, faixa,
+                     bt_std, bt_ewma, bt_rob):
+    """Save a concise summary of the run to session history."""
+    hist = session.get("historico", [])
+    entry = {
+        "ticker": ticker,
+        "dias": dias,
+        "price": price,
+        "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M"),
+        "indicadores": {
+            "rsi": indicadores.get("rsi"),
+            "volatilidade": indicadores.get("volatilidade"),
+            "tendencia": indicadores.get("tendencia"),
+            "risco": indicadores.get("risco"),
+            "drawdown": indicadores.get("drawdown"),
+        } if indicadores else None,
+        "faixa": faixa,
+        "bt_std": bt_std,
+        "bt_ewma": bt_ewma,
+        "bt_rob": bt_rob,
+    }
+    # Keep last 20 entries
+    hist.append(entry)
+    if len(hist) > 20:
+        hist = hist[-20:]
+    session["historico"] = hist
 
 
 @app.post("/analyze")
@@ -75,6 +127,7 @@ def analyze():
     })
 
     if not history:
+        _save_to_history(ticker, dias, price, None, None, None, None, None)
         return render_template(
             "dashboard.html",
             ticker=ticker,
@@ -100,16 +153,15 @@ def analyze():
             k_otimo=None,
             bt_calibrado=None,
             faixa_calibrada=None,
+            title=f"{ticker} — InvestEdu",
         )
 
     indicadores = analisar_indicadores(history)
 
-    # Backtests
     bt_std = backtest_faixa(history, dias=dias, metodo="std")
     bt_ewma = backtest_faixa(history, dias=dias, metodo="ewma")
     bt_rob = backtest_faixa(history, dias=dias, metodo="rob")
 
-    # Calibração k (EWMA)
     calib = calibrar_k(
         historico=history,
         dias=dias,
@@ -119,7 +171,6 @@ def analyze():
     k_otimo = calib.get("k_otimo")
     bt_calibrado = calib.get("resultado")
 
-    # Faixas (baseline)
     faixa = projetar_faixa(price, indicadores["volatilidade"], dias=dias)
 
     faixa_std = (
@@ -140,6 +191,8 @@ def analyze():
         if k_otimo is not None else None
     )
 
+    _save_to_history(ticker, dias, price, indicadores, faixa, bt_std, bt_ewma, bt_rob)
+
     return render_template(
         "dashboard.html",
         ticker=ticker,
@@ -159,6 +212,7 @@ def analyze():
         k_otimo=k_otimo,
         bt_calibrado=bt_calibrado,
         faixa_calibrada=faixa_calibrada,
+        title=f"{ticker} — InvestEdu",
     )
 
 

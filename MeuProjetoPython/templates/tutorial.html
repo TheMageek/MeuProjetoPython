@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="section">
+  <div class="container">
+
+    <!-- Header -->
+    <div style="max-width:700px;margin:0 auto 48px;text-align:center;">
+      <div class="badge" style="margin-bottom:14px;">📚 Tutorial para Iniciantes</div>
+      <h1 style="font-size:clamp(26px,4vw,38px);margin-bottom:12px;">
+        Aprenda a analisar ações em <span class="text-gradient">8 passos</span>
+      </h1>
+      <p class="lead" style="margin-bottom:0;">
+        Um guia simples e direto para você começar a entender o mercado de ações brasileiro.
+      </p>
+    </div>
+
+    <!-- Timeline steps -->
+    <div style="max-width:700px;margin:0 auto;">
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">1</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Entenda o que são ações</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:8px;">
+            Uma ação representa uma pequena parte de uma empresa. Quando você compra uma ação, você se torna sócio daquela empresa, mesmo que seja uma parte muito pequena.
+          </p>
+          <p style="color:var(--muted-fg);font-size:14px;">
+            Por exemplo: se uma empresa tem 1.000.000 de ações e você compra 100, você é dono de 0,01% da empresa.
+          </p>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Comece investindo em empresas que você conhece e usa no dia a dia!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">2</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Conheça os setores</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">As empresas são organizadas em setores de acordo com sua atividade principal:</p>
+          <ul style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li><strong>Tecnologia</strong>: Empresas de software, hardware, internet</li>
+            <li><strong>Financeiro</strong>: Bancos, seguradoras, corretoras</li>
+            <li><strong>Energia</strong>: Petróleo, gás, energia elétrica</li>
+            <li><strong>Varejo</strong>: Lojas, e-commerce</li>
+            <li><strong>Saúde</strong>: Hospitais, laboratórios, planos de saúde</li>
+            <li><strong>Mineração</strong>: Extração de minérios e metais</li>
+          </ul>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Diversificar entre setores reduz seu risco!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">3</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Entenda o P/L (Preço/Lucro)</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">
+            O P/L é um dos indicadores mais importantes. Ele mostra quantos anos levaria para recuperar seu investimento se a empresa mantivesse o lucro atual.
+          </p>
+          <ul style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li><strong>P/L &lt; 10</strong>: Pode indicar que a ação está barata</li>
+            <li><strong>P/L 10–15</strong>: Considerado justo para a maioria</li>
+            <li><strong>P/L &gt; 20</strong>: Pode indicar que a ação está cara</li>
+            <li><strong>P/L negativo</strong>: A empresa está tendo prejuízo</li>
+          </ul>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Compare o P/L sempre com empresas do mesmo setor!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">4</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Dividend Yield</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">
+            Dividend Yield (DY) mostra quanto a empresa paga de dividendos em relação ao preço da ação.
+          </p>
+          <ul style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li><strong>DY &gt; 6%</strong>: Considerado alto — bom para renda passiva</li>
+            <li><strong>DY 3–6%</strong>: Moderado</li>
+            <li><strong>DY &lt; 3%</strong>: Baixo — empresa pode estar reinvestindo</li>
+            <li><strong>DY = 0</strong>: Empresa não paga dividendos</li>
+          </ul>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Dividendos altos são ótimos, mas verifique se são sustentáveis!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">5</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Compare com o setor</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">
+            Nunca analise uma ação isoladamente. Compare sempre com empresas do mesmo setor:
+          </p>
+          <ol style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li>Veja se o preço está acima ou abaixo da média do setor</li>
+            <li>Compare os indicadores (P/L, DY) com os concorrentes</li>
+            <li>Observe se a empresa está crescendo mais ou menos que as outras</li>
+          </ol>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Nossa plataforma gera análises comparativas automaticamente!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">6</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Considere o cenário macro</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">O ambiente econômico afeta todas as empresas:</p>
+          <ul style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li><strong>PIB em alta</strong>: Economia crescendo, geralmente bom para ações</li>
+            <li><strong>Selic alta</strong>: Renda fixa mais atrativa, pode pressionar ações</li>
+            <li><strong>Inflação alta</strong>: Corrói o poder de compra</li>
+            <li><strong>Dólar alto</strong>: Bom para exportadoras, ruim para importadoras</li>
+          </ul>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Fique de olho nos indicadores na nossa página inicial!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-line"></div>
+        <div class="step-number">7</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Defina quanto investir</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">Regras de ouro para iniciantes:</p>
+          <ol style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li><strong>Nunca invista dinheiro que pode precisar no curto prazo</strong></li>
+            <li><strong>Tenha uma reserva de emergência antes de investir em ações</strong></li>
+            <li><strong>Comece pequeno</strong> — invista valores que pode perder sem afetar sua vida</li>
+            <li><strong>Diversifique</strong> — não coloque tudo em uma única ação</li>
+          </ol>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Recomendamos começar com no máximo 10% do seu patrimônio em ações.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tutorial-step">
+        <div class="step-number">8</div>
+        <div class="card">
+          <h2 style="font-size:18px;margin-bottom:10px;">Monitore e aprenda</h2>
+          <p style="color:var(--muted-fg);font-size:14px;margin-bottom:10px;">Investir é uma jornada de aprendizado contínuo:</p>
+          <ul style="color:var(--muted-fg);font-size:14px;padding-left:20px;display:flex;flex-direction:column;gap:4px;">
+            <li>Acompanhe suas ações regularmente (mas não obsessivamente)</li>
+            <li>Leia sobre as empresas que você investe</li>
+            <li>Entenda que quedas fazem parte do processo</li>
+            <li>Tenha paciência — investimentos de longo prazo tendem a dar melhores resultados</li>
+          </ul>
+          <div class="tip-box">
+            <span style="font-size:18px;">✅</span>
+            <p style="font-size:14px;margin:0;"><strong>💡 Dica:</strong> Use nossa plataforma para acompanhar e aprender mais!</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div style="max-width:700px;margin:48px auto 0;">
+      <div class="cta-banner">
+        <div class="cta-banner-blob" style="top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,0.1);"></div>
+        <div style="position:relative;">
+          <h2>🎉 Parabéns! Você completou o tutorial!</h2>
+          <p>Agora você tem o básico para começar a analisar ações.</p>
+          <a class="btn btn-white" href="{{ url_for('index') }}#analisar">
+            Começar a Analisar
+            <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="section">
+  <div class="container">
+
+    <!-- Header -->
+    <div style="max-width:700px;margin:0 auto 40px;text-align:center;">
+      <div class="badge" style="margin-bottom:14px;">❓ Perguntas Frequentes</div>
+      <h1 style="font-size:clamp(26px,4vw,38px);margin-bottom:12px;">
+        Tire suas <span class="text-gradient">dúvidas</span>
+      </h1>
+      <p class="lead" style="margin-bottom:0;">
+        Respostas para as perguntas mais comuns sobre investimentos em ações.
+      </p>
+    </div>
+
+    <div style="max-width:700px;margin:0 auto;">
+
+      <!-- Search -->
+      <div class="search-wrap" style="margin-bottom:20px;">
+        <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" id="faqSearch" placeholder="Buscar pergunta..." oninput="filterFAQ()">
+      </div>
+
+      <!-- Category filters -->
+      <div class="faq-category-filter" id="categoryFilters">
+        <button class="category-chip active" onclick="setCategory('', this)">Todas</button>
+        <button class="category-chip" onclick="setCategory('Conceitos Básicos', this)">Conceitos Básicos</button>
+        <button class="category-chip" onclick="setCategory('Indicadores', this)">Indicadores</button>
+        <button class="category-chip" onclick="setCategory('Análise', this)">Análise</button>
+        <button class="category-chip" onclick="setCategory('Investimento', this)">Investimento</button>
+        <button class="category-chip" onclick="setCategory('Plataforma', this)">Plataforma</button>
+      </div>
+
+      <!-- FAQ Items -->
+      <div id="faqList">
+
+        <div class="faq-item" data-category="Conceitos Básicos" data-q="o que é uma ação">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que é uma ação?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Uma ação é uma pequena parte de uma empresa. Quando você compra ações, você se torna sócio daquela empresa e tem direito a uma parte dos lucros (dividendos) e ao crescimento do valor da empresa.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Conceitos Básicos" data-q="o que significa o código das ações ticker">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que significa o código das ações (ticker)?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            O ticker é um código de 4 letras seguido de um número que identifica a ação na bolsa. Por exemplo, PETR4 é Petrobras. O número indica o tipo de ação: 3 = ordinária (com voto), 4 = preferencial (prioridade em dividendos), 11 = units (conjunto de ações).
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Conceitos Básicos" data-q="qual a diferença entre ação ordinária e preferencial">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Qual a diferença entre ação ordinária e preferencial?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Ações ordinárias (terminam em 3) dão direito a voto nas assembleias da empresa. Ações preferenciais (terminam em 4) não dão voto, mas têm prioridade no recebimento de dividendos.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Indicadores" data-q="o que é p/l preço lucro">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que é P/L (Preço/Lucro)?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            O P/L mostra quantos anos de lucro atual seriam necessários para "pagar" o preço da ação. Um P/L de 10 significa que, mantendo o lucro atual, você recuperaria o investimento em 10 anos. P/L mais baixo pode indicar ação barata, mais alto pode indicar cara.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Indicadores" data-q="o que é dividend yield dividendos">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que é Dividend Yield?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Dividend Yield (DY) é o percentual de dividendos pagos em relação ao preço da ação. Se uma ação custa R$100 e paga R$5 de dividendos por ano, o DY é 5%. É como um "aluguel" que você recebe por ser sócio da empresa.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Indicadores" data-q="o que significa quando o p/l é negativo">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que significa quando o P/L é negativo?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            P/L negativo significa que a empresa está tendo prejuízo. Não significa necessariamente que é um mau investimento, mas requer mais cautela e análise para entender se é uma situação temporária ou estrutural.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Indicadores" data-q="o que é rsi índice de força relativa volatilidade">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que é RSI e volatilidade?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            O RSI (Índice de Força Relativa) mede o "ritmo" recente do preço, entre 0 e 100. Acima de 70 pode estar sobrecomprado (esticado); abaixo de 30 pode estar sobrevendido (muito pressionado).<br><br>
+            Volatilidade mede o quanto o preço oscila. Alta volatilidade = maior risco e maior potencial de ganho ou perda.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Análise" data-q="por que comparar com o setor">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Por que comparar com o setor?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Empresas do mesmo setor enfrentam desafios e oportunidades semelhantes. Comparar os indicadores com concorrentes ajuda a identificar se uma empresa está melhor ou pior que a média, e se o preço está justo.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Análise" data-q="como os indicadores macroeconômicos afetam as ações selic pib inflação">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Como os indicadores macroeconômicos afetam as ações?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Taxa Selic alta torna a renda fixa mais atrativa, podendo pressionar ações. PIB em crescimento geralmente beneficia empresas. Inflação alta afeta o consumo. Dólar alto beneficia exportadoras mas prejudica importadoras.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Análise" data-q="o que é backtest faixa projetada drawdown">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>O que é Backtest e Faixa Projetada?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            <strong>Backtest</strong>: simulação de quanto o método acertaria no passado. Avalia se a faixa projetada capturaria bem os preços reais.<br><br>
+            <strong>Faixa Projetada</strong>: intervalo de preços esperados para o horizonte escolhido, calculado com base na volatilidade histórica.<br><br>
+            <strong>Drawdown</strong>: queda máxima do preço em relação ao último topo registrado no período analisado.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Investimento" data-q="quanto devo investir em ações">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Quanto devo investir em ações?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap:round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Para iniciantes, recomenda-se não mais que 10% do patrimônio em renda variável. O mais importante é: tenha uma reserva de emergência primeiro, nunca invista dinheiro que pode precisar no curto prazo, e comece aos poucos.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Investimento" data-q="por quanto tempo devo manter uma ação longo prazo">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Por quanto tempo devo manter uma ação?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Investimento em ações geralmente funciona melhor no longo prazo (3+ anos). No curto prazo, as oscilações são normais. Warren Buffett diz que seu prazo favorito para manter uma ação é "para sempre".
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Plataforma" data-q="os dados desta plataforma são reais brapi yfinance">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>Os dados desta plataforma são reais?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            Os preços são buscados via BRAPI e Yahoo Finance (yfinance). Os indicadores macroeconômicos vêm do BCB/SGS. As análises técnicas são calculadas com base no histórico real do ativo. Esta plataforma é educacional — os resultados são informativos, não recomendações de investimento.
+          </div>
+        </div>
+
+        <div class="faq-item" data-category="Plataforma" data-q="as recomendações são confiáveis análise educacional">
+          <button class="faq-trigger" onclick="toggleFAQ(this)">
+            <span>As análises e projeções são confiáveis?</span>
+            <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-content">
+            As análises são geradas por algoritmos baseados em indicadores técnicos reais (RSI, volatilidade EWMA/STD/Robusta, backtests calibrados). Elas demonstram como uma análise quantitativa funciona, mas <strong>NÃO constituem recomendação de investimento</strong>. Sempre consulte um profissional qualificado antes de investir.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- No results message -->
+      <div id="noResults" style="display:none;text-align:center;padding:40px;color:var(--muted-fg);">
+        <div style="font-size:40px;margin-bottom:12px;">🔍</div>
+        <p>Nenhuma pergunta encontrada. Tente outros termos.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  let activeCategory = '';
+
+  function toggleFAQ(trigger) {
+    const content = trigger.nextElementSibling;
+    const isOpen = content.classList.contains('open');
+    // close all
+    document.querySelectorAll('.faq-content.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.faq-trigger.expanded').forEach(el => el.classList.remove('expanded'));
+    if (!isOpen) {
+      content.classList.add('open');
+      trigger.classList.add('expanded');
+    }
+  }
+
+  function setCategory(cat, btn) {
+    activeCategory = cat;
+    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    filterFAQ();
+  }
+
+  function filterFAQ() {
+    const query = document.getElementById('faqSearch').value.toLowerCase();
+    const items = document.querySelectorAll('.faq-item');
+    let visible = 0;
+    items.forEach(item => {
+      const catMatch = !activeCategory || item.dataset.category === activeCategory;
+      const textMatch = !query || item.dataset.q.includes(query) || item.querySelector('.faq-trigger span').textContent.toLowerCase().includes(query);
+      if (catMatch && textMatch) { item.style.display = ''; visible++; }
+      else { item.style.display = 'none'; }
+    });
+    document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+  }
+</script>
+
+{% endblock %}

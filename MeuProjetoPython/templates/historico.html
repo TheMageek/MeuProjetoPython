@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="section">
+  <div class="container">
+
+    <!-- Header -->
+    <div style="margin-bottom:32px;">
+      <div class="badge" style="margin-bottom:14px;">⏱ Histórico de Análises</div>
+      <h1 style="font-size:clamp(26px,4vw,38px);margin-bottom:8px;">
+        Análises <span class="text-gradient">realizadas</span>
+      </h1>
+      <p style="color:var(--muted-fg);">
+        Todas as análises feitas nesta sessão. O histórico é limpo ao reiniciar o servidor.
+      </p>
+    </div>
+
+    {% if not historico %}
+      <!-- Empty state -->
+      <div class="card" style="text-align:center;padding:56px 20px;max-width:500px;margin:0 auto;">
+        <div style="font-size:56px;margin-bottom:16px;">📭</div>
+        <h2 style="font-size:22px;margin-bottom:10px;">Nenhuma análise ainda</h2>
+        <p style="color:var(--muted-fg);margin-bottom:24px;">
+          Faça sua primeira análise de ação para vê-la aqui.
+        </p>
+        <a class="btn btn-primary" href="{{ url_for('index') }}#analisar">
+          <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analisar uma ação
+        </a>
+      </div>
+    {% else %}
+
+      <!-- Summary chips -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;">
+        <span class="pill">{{ historico|length }} análise{% if historico|length != 1 %}s{% endif %}</span>
+        <span class="pill pill-muted">Sessão atual</span>
+      </div>
+
+      <!-- Run cards -->
+      {% for run in historico|reverse %}
+        <div class="run-card">
+          <div class="run-header" onclick="toggleRun('run-{{ loop.index }}')">
+            <div style="display:flex;align-items:center;gap:14px;flex:1;min-width:0;">
+              <div class="run-ticker">{{ run.ticker }}</div>
+              <div class="run-meta">
+                <span>⏱ {{ run.timestamp }}</span>
+                <span>📆 {{ run.dias }} dias</span>
+                {% if run.price is not none %}
+                  <span class="pill pill-muted">R$ {{ "%.2f"|format(run.price|float) }}</span>
+                {% endif %}
+              </div>
+            </div>
+            <svg id="chevron-run-{{ loop.index }}" style="width:20px;height:20px;flex-shrink:0;color:var(--muted-fg);transition:transform 0.3s;" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+
+          <div class="run-body" id="run-{{ loop.index }}">
+            <div class="grid grid-3" style="margin-bottom:16px;">
+
+              <!-- Indicators -->
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted-fg);font-weight:700;margin-bottom:10px;">Indicadores</div>
+                {% if run.indicadores %}
+                  <div style="display:flex;flex-direction:column;gap:8px;font-size:14px;">
+                    {% if run.indicadores.rsi is not none %}
+                      <div style="display:flex;justify-content:space-between;">
+                        <span style="color:var(--muted-fg);">RSI</span>
+                        <strong>{{ "%.2f"|format(run.indicadores.rsi|float) }}</strong>
+                      </div>
+                    {% endif %}
+                    {% if run.indicadores.volatilidade is not none %}
+                      <div style="display:flex;justify-content:space-between;">
+                        <span style="color:var(--muted-fg);">Volatilidade</span>
+                        <strong>{{ "%.4f"|format(run.indicadores.volatilidade|float) }}</strong>
+                      </div>
+                    {% endif %}
+                    {% if run.indicadores.tendencia %}
+                      <div style="display:flex;justify-content:space-between;">
+                        <span style="color:var(--muted-fg);">Tendência</span>
+                        <span class="pill">{{ run.indicadores.tendencia }}</span>
+                      </div>
+                    {% endif %}
+                    {% if run.indicadores.risco %}
+                      <div style="display:flex;justify-content:space-between;">
+                        <span style="color:var(--muted-fg);">Risco</span>
+                        <span class="pill">{{ run.indicadores.risco }}</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                {% else %}
+                  <p style="color:var(--muted-fg);font-size:14px;">—</p>
+                {% endif %}
+              </div>
+
+              <!-- Faixa padrão -->
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted-fg);font-weight:700;margin-bottom:10px;">Faixa Padrão</div>
+                {% if run.faixa and run.faixa.get('min') is not none %}
+                  <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+                    <span style="font-size:20px;font-weight:900;color:var(--danger);">R$ {{ "%.2f"|format(run.faixa.min|float) }}</span>
+                    <span style="color:var(--muted-fg);">→</span>
+                    <span style="font-size:20px;font-weight:900;color:var(--success);">R$ {{ "%.2f"|format(run.faixa.max|float) }}</span>
+                  </div>
+                {% else %}
+                  <p style="color:var(--muted-fg);font-size:14px;">—</p>
+                {% endif %}
+              </div>
+
+              <!-- Backtests -->
+              <div>
+                <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted-fg);font-weight:700;margin-bottom:10px;">Backtests (Acurácia)</div>
+                <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;">
+                  {% for label, bt in [("STD", run.bt_std), ("EWMA", run.bt_ewma), ("Robusta", run.bt_rob)] %}
+                    {% if bt %}
+                      <div style="display:flex;justify-content:space-between;">
+                        <span style="color:var(--muted-fg);">{{ label }}</span>
+                        {% set acc = bt.get('acuracia') %}
+                        {% if acc is not none %}
+                          <span class="pill {% if acc|float >= 0.8 %}pill-pos{% elif acc|float < 0.6 %}pill-neg{% endif %}">
+                            {{ "%.1f"|format(acc|float * 100) }}%
+                          </span>
+                        {% else %}—{% endif %}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Re-analyze button -->
+            <form method="POST" action="/analyze" style="margin-top:4px;">
+              <input type="hidden" name="ticker" value="{{ run.ticker }}">
+              <input type="hidden" name="dias" value="{{ run.dias }}">
+              <button class="btn btn-outline btn-sm" type="submit">🔁 Reanalisar {{ run.ticker }}</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+
+      <!-- Clear history -->
+      <div style="text-align:center;margin-top:20px;">
+        <a class="btn btn-outline btn-sm" href="{{ url_for('limpar_historico') }}">🗑 Limpar histórico</a>
+      </div>
+
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+  function toggleRun(id) {
+    const body = document.getElementById(id);
+    const idx = id.split('-')[1];
+    const chevron = document.getElementById('chevron-' + id);
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open');
+    chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  }
+</script>
+
+{% endblock %}

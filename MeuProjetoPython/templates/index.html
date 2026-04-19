@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <div class="container hero-inner">
+
+    <div class="badge">✨ Plataforma educacional para investidores iniciantes</div>
+
+    <h1 style="font-size: clamp(32px,5vw,56px); margin-top:18px; margin-bottom:16px;">
+      Aprenda a analisar ações de forma <span class="text-gradient">simples e didática</span>
+    </h1>
+
+    <p class="lead">
+      Entenda o mercado financeiro brasileiro com explicações claras,
+      visualização de indicadores e projeções em um painel fácil de ler.
+    </p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="#analisar">
+        <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        Começar Análise
+      </a>
+      <a class="btn btn-outline" href="{{ url_for('tutorial') }}">
+        <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Ver Tutorial
+      </a>
+    </div>
+
+    <!-- Search card -->
+    <div class="card" style="margin-top:28px; text-align:left; max-width:600px; margin-left:auto; margin-right:auto;" id="analisar">
+      <h3 style="margin-bottom:6px;">🔎 Analisar uma ação</h3>
+      <p style="color:var(--muted-fg);font-size:14px;margin-bottom:14px;">
+        Digite o ticker (ex: PETR4, VALE3, ITUB4) e escolha o horizonte de dias.
+      </p>
+      <form class="form" method="POST" action="/analyze">
+        <input class="input" name="ticker" placeholder="Ticker (ex: PETR4)" required>
+        <input class="input" name="dias" placeholder="Dias (ex: 10)" value="10" inputmode="numeric" style="max-width:140px;">
+        <button class="btn btn-primary" type="submit">Analisar</button>
+      </form>
+      <small style="margin-top:10px;display:block;">💡 Dica: alguns tickers no Yahoo Finance usam sufixo .SA — ex: PETR4.SA</small>
+    </div>
+  </div>
+</section>
+
+<!-- MACRO INDICATORS -->
+{% if macro %}
+<section class="section section-muted">
+  <div class="container">
+    <div class="section-header">
+      <h2>📊 Indicadores do Mercado</h2>
+      <p>Dados públicos (BCB/SGS e brapi). Se alguma fonte falhar, mostramos "—".</p>
+    </div>
+    <div class="grid grid-6">
+      {% for title, item in macro.items() %}
+        <div class="card macro-card">
+          <div class="macro-top">
+            <div class="macro-title">{{ title }}</div>
+            {% set ch = item.get('change_pct') %}
+            {% if ch is not none %}
+              <span class="macro-chip {% if ch|float < 0 %}neg{% else %}pos{% endif %}">
+                {{ "%.2f"|format(ch|float) }}%
+              </span>
+            {% endif %}
+          </div>
+          <div class="macro-value">
+            {% set v = item.get('value') %}
+            {% if v is none %}—
+            {% else %}
+              {% if title in ["Taxa Selic", "Inflação (IPCA)", "Desemprego", "PIB Brasil"] %}
+                {{ "%.2f"|format(v|float) }}<span class="macro-unit">%</span>
+              {% elif title == "Dólar (USD/BRL)" %}
+                {{ "%.2f"|format(v|float) }}<span class="macro-unit">R$</span>
+              {% elif title == "Ibovespa" %}
+                {{ "{:,.0f}".format(v|float).replace(",", ".") }}<span class="macro-unit">pts</span>
+              {% else %}
+                {{ v }}
+              {% endif %}
+            {% endif %}
+          </div>
+          <small class="macro-foot">
+            Fonte: {{ item.get('source') or "—" }}{% if item.get('date') %} • {{ item.get('date') }}{% endif %}
+          </small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- FEATURES -->
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>📊 O que você verá no painel</h2>
+      <p>Organização em cards, com leitura rápida e visual limpo — ideal para quem está aprendendo.</p>
+    </div>
+    <div class="grid grid-4">
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <h3 style="font-size:16px;margin-bottom:8px;">Indicadores Técnicos</h3>
+        <p style="color:var(--muted-fg);font-size:14px;">RSI, volatilidade, drawdown e leitura de risco com linguagem simples.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3 style="font-size:16px;margin-bottom:8px;">Faixa Projetada</h3>
+        <p style="color:var(--muted-fg);font-size:14px;">Projeção de intervalo de preço por dia para o horizonte escolhido.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧪</div>
+        <h3 style="font-size:16px;margin-bottom:8px;">Backtests</h3>
+        <p style="color:var(--muted-fg);font-size:14px;">Comparativo de métodos — STD, EWMA, Robusta e Calibrada.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗂</div>
+        <h3 style="font-size:16px;margin-bottom:8px;">Histórico</h3>
+        <p style="color:var(--muted-fg);font-size:14px;">Todas as análises salvas na sessão com resultados detalhados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTORS -->
+<section class="section section-muted">
+  <div class="container">
+    <div class="section-header">
+      <h2>🏢 Setores Populares</h2>
+      <p>Analise ações de diferentes setores da economia brasileira</p>
+    </div>
+    <div class="grid grid-6">
+      {% for ticker, label, emoji in [
+        ("PETR4","Petrobras","⛽"),("VALE3","Vale","⛏"),("ITUB4","Itaú","🏦"),
+        ("BBDC4","Bradesco","💳"),("WEGE3","WEG","⚙️"),("MGLU3","Magalu","🛒")
+      ] %}
+        <form method="POST" action="/analyze" style="display:contents;">
+          <input type="hidden" name="ticker" value="{{ ticker }}">
+          <input type="hidden" name="dias" value="10">
+          <button type="submit" class="sector-card" style="cursor:pointer;border:1px solid var(--border);">
+            <span class="sector-emoji">{{ emoji }}</span>
+            <strong>{{ ticker }}</strong>
+            <div style="color:var(--muted-fg);font-size:12px;margin-top:4px;">{{ label }}</div>
+          </button>
+        </form>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-banner" style="max-width:760px;margin:0 auto;">
+      <div class="cta-banner-blob" style="top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,0.1);"></div>
+      <div class="cta-banner-blob" style="bottom:-60px;left:-60px;width:200px;height:200px;background:rgba(255,255,255,0.06);"></div>
+      <div style="position:relative;">
+        <h2>Pronto para começar?</h2>
+        <p>Escolha um ticker e veja a análise num painel bonito e responsivo.</p>
+        <a class="btn btn-white" href="#analisar">
+          Analisar uma ação
+          <svg style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
