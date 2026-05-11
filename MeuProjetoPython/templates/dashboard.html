@@ -199,6 +199,61 @@
       {% endif %}
     </div>
 
+<div class="ml-section">
+    <h3>🤖 Previsão com Inteligência Artificial</h3>
+    
+    <div class="cards-grid">
+        <div class="card">
+            <strong>Probabilidade de Alta</strong><br>
+            <h2>{{ ml_result.prob_up }}%</h2>
+        </div>
+        <div class="card">
+            <strong>Preço Atual</strong><br>
+            <h2>R$ {{ ml_result.entry }}</h2>
+        </div>
+        <div class="card">
+            <strong>Stop Gain</strong><br>
+            <h2 style="color:green">R$ {{ ml_result.stop_gain }}</h2>
+        </div>
+        <div class="card">
+            <strong>Stop Loss</strong><br>
+            <h2 style="color:red">R$ {{ ml_result.stop_loss }}</h2>
+        </div>
+    </div>
+
+<h3>🤖 Principais Fatores da Previsão </h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+        
+        <!-- ALTA -->
+        <div class="card" style="border-left: 5px solid #22c55e;">
+            <h4 style="color: #22c55e; margin-bottom: 15px;">✅ O que está empurrando para ALTA:</h4>
+            <ul style="list-style: none; padding: 0;">
+                {% for item in ml_result.top_positive %}
+                <li style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee;">
+                    <strong>{{ item.feature }}</strong> 
+                    <span style="color:#22c55e; font-weight: 700;">{{ item.impact }}</span><br>
+                    <small style="color:#555; line-height: 1.4;">{{ item.explanation }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- BAIXA -->
+        <div class="card" style="border-left: 5px solid #ef4444;">
+            <h4 style="color: #ef4444; margin-bottom: 15px;">❌ O que está puxando para BAIXA:</h4>
+            <ul style="list-style: none; padding: 0;">
+                {% for item in ml_result.top_negative %}
+                <li style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee;">
+                    <strong>{{ item.feature }}</strong> 
+                    <span style="color:#ef4444; font-weight: 700;">{{ item.impact }}</span><br>
+                    <small style="color:#555; line-height: 1.4;">{{ item.explanation }}</small>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
     <!-- BACKTESTS TABLE -->
     {% if bt_std or bt_ewma or bt_rob %}
     <div class="card" style="margin-top:16px;overflow-x:auto;">

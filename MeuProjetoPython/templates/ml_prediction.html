@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>{{ title }}</title>
+
+<style>
+
+body{
+    background:#111827;
+    color:white;
+    font-family:Arial;
+    padding:40px;
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#1f2937;
+    padding:24px;
+    border-radius:14px;
+}
+
+.big{
+    font-size:30px;
+    font-weight:bold;
+}
+
+h2{
+    color:#00ff99;
+}
+
+input{
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    width:250px;
+}
+
+button{
+    padding:12px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Dashboard IA Financeira</h1>
+
+<form action="/buscar_ml" method="POST">
+
+    <input type="text" name="ticker" placeholder="PETR4.SA">
+
+    <button type="submit">
+        Analisar
+    </button>
+
+</form>
+
+<br><br>
+
+<div class="grid">
+
+    <div class="card">
+        <h2>Ticker</h2>
+        <div class="big">{{ result.ticker }}</div>
+    </div>
+
+    <div class="card">
+        <h2>Probabilidade Alta</h2>
+        <div class="big">{{ result.prob_up }}%</div>
+    </div>
+
+    <div class="card">
+        <h2>Preço Atual</h2>
+        <div class="big">R$ {{ result.entry }}</div>
+    </div>
+
+    <div class="card">
+        <h2>Take Profit</h2>
+        <div class="big">R$ {{ result.stop_gain }}</div>
+    </div>
+
+    <div class="card">
+        <h2>Stop Loss</h2>
+        <div class="big">R$ {{ result.stop_loss }}</div>
+    </div>
+
+    <div class="card">
+        <h2>Precisão ML</h2>
+        <div class="big">{{ (result.model_accuracy * 100)|round(2) }}%</div>
+    </div>
+
+</div>
+
+<br><br>
+
+<div class="grid">
+
+<div class="card">
+
+<h2>Features Positivas</h2>
+
+<ul>
+{% for item in result.top_positive %}
+<li>{{ item.feature }} → {{ item.impact }}</li>
+{% endfor %}
+</ul>
+
+</div>
+
+<div class="card">
+
+<h2>Features Negativas</h2>
+
+<ul>
+{% for item in result.top_negative %}
+<li>{{ item.feature }} → {{ item.impact }}</li>
+{% endfor %}
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
